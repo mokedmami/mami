@@ -393,13 +393,24 @@ function renderAll(data) {
 
   if(window._tableActive) renderT();
 
-  // מנהלי סחר
+  // מנהלי סחר — חשב wait breakdown מ-ALL_CASES
   const mgGrid = document.getElementById('managersGrid');
   if (mgGrid && data.managers) {
     mgGrid.innerHTML = '';
+
+    // בנה מפה של manager → { forSup, forMami }
+    const mgrWait = {};
+    (ALL_CASES||[]).forEach(c => {
+      if (!c.manager) return;
+      if (!mgrWait[c.manager]) mgrWait[c.manager] = { sup:0, mami:0 };
+      if (c.wait === 'ספק')  mgrWait[c.manager].sup++;
+      if (c.wait === 'Mami') mgrWait[c.manager].mami++;
+    });
+
     data.managers.forEach(m => {
-      const cls = m.oldest>=21?'danger':m.oldest>=10?'warning':'';
-      const ic  = m.oldest>=21?'🔴':m.oldest>=10?'🟡':'🟢';
+      const cls  = m.oldest>=21?'danger':m.oldest>=10?'warning':'';
+      const ic   = m.oldest>=21?'🔴':m.oldest>=10?'🟡':'🟢';
+      const wait = mgrWait[m.manager] || { sup:0, mami:0 };
       const supRows = m.suppliers.map(s =>
         `<div class="mgr-sup-row">
           <span>${s.supplier}</span>
@@ -412,9 +423,19 @@ function renderAll(data) {
           <span>${ic}</span>
         </div>
         <div class="mgr-stats">
-          <div><div class="sbv ${m.count>=10?'r':''}">${m.count}</div><div class="sbl">פניות</div></div>
+          <div><div class="sbv ${m.count>=10?'r':''}">${m.count}</div><div class="sbl">סה״כ פניות</div></div>
           <div><div class="sbv ${m.oldest>=21?'r':m.oldest>=10?'a':''}">${m.oldest}</div><div class="sbl">ישן (ימים)</div></div>
           <div><div class="sbv">${m.avg}</div><div class="sbl">ממוצע</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border)">
+          <div style="background:#fef2f2;border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:18px;font-weight:700;color:#dc2626">${wait.sup}</div>
+            <div style="font-size:10px;color:#991b1b">ממתינות לספק</div>
+          </div>
+          <div style="background:#eff6ff;border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:18px;font-weight:700;color:#2563eb">${wait.mami}</div>
+            <div style="font-size:10px;color:#1e40af">ממתינות ל-Mami</div>
+          </div>
         </div>
         <div class="mgr-sup-list">${supRows}</div>
       </div>`;
