@@ -142,6 +142,7 @@ table.mt tr:last-child td{border-bottom:none;}
   </div>
   <div class="nav-live"><span class="dot"></span>עדכון חי</div>
   <div class="nav-date" id="navDate"></div>
+  <div id="refreshStatus" style="font-size:10px;color:#9ca3af"></div>
 </nav>
 <div class="tabs">
   <div class="tab active" onclick="showPage(0)">📊 תמונת מצב</div>
@@ -262,7 +263,7 @@ async function loadFromSheets() {
     renderAll();
 
     document.getElementById('navDate').textContent = 'עדכון אחרון: ' + (data.updated_at || '');
-    document.getElementById('refreshStatus').textContent = '';
+    const rs=document.getElementById('refreshStatus'); if(rs) rs.textContent='';
 
   } catch(e) {
     showError('שגיאה בטעינת הנתונים — ' + e.message);
