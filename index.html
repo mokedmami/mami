@@ -60,7 +60,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:16px 0;}
 .wval{font-size:22px;font-weight:700;}
 .wval.sup{color:#dc2626;}.wval.mami{color:#2563eb;}.wval.mok{color:#d97706;}
 .wlbl{font-size:10px;color:var(--muted);margin-top:2px;}
-.asg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.asg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
 .sbc{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 .sbc.danger{border:2px solid #ef4444;}.sbc.warning{border:2px solid #f59e0b;}
 .sbh{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
@@ -78,9 +78,16 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:16px 0;}
 .cpi{padding:12px 16px;}
 .cptit{font-size:11px;font-weight:600;color:var(--muted);margin:0 0 8px;}
 .ct{width:100%;border-collapse:collapse;font-size:11px;}
-.ct th{text-align:right;color:var(--muted);font-weight:500;padding:0 0 5px;border-bottom:1px solid var(--border);font-size:10px;}
-.ct td{padding:5px 0;border-bottom:1px solid #f3f4f6;color:var(--text);}
+.ct th{text-align:right;color:var(--muted);font-weight:500;padding:0 8px 6px;border-bottom:1px solid var(--border);font-size:11px;}
+.ct td{padding:6px 8px;border-bottom:1px solid #f3f4f6;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ct tr:last-child td{border-bottom:none;}
+@media(max-width:480px){.hide-xs{display:none!important;}}
+@media(max-width:600px){
+  .ct{font-size:10px;}
+  .ct td{max-width:80px;padding:4px 2px;}
+  .ct th{font-size:9px;padding:0 2px 4px;}
+  .ph{font-size:10px;}
+}
 .ph{color:#2563eb;text-decoration:none;}
 .ar{color:#dc2626;font-weight:600;}.aa{color:#d97706;font-weight:600;}.ag{color:#16a34a;}
 .pill{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;}
@@ -107,7 +114,8 @@ table.mt td{padding:7px 8px;border-bottom:1px solid #f3f4f6;color:var(--text);wh
 table.mt tr:hover td{background:#f9fafb;}
 table.mt tr:last-child td{border-bottom:none;}
 .bc{display:inline-block;width:30px;height:4px;border-radius:2px;vertical-align:middle;margin-left:4px;}
-@media(max-width:900px){.kpi-grid,.sup10,.asg{grid-template-columns:repeat(2,1fr);}.bot{grid-template-columns:1fr;}}
+@media(max-width:900px){.kpi-grid,.sup10,.asg{grid-template-columns:1fr;}.bot{grid-template-columns:1fr;}}
+@media(max-width:480px){.hide-xs{display:none!important;}}
 @media(max-width:600px){
   .nav{padding:0 12px;gap:8px;height:52px;}
   .nav-title{font-size:13px;}.nav-sub{display:none;}
@@ -205,6 +213,10 @@ table.mt tr:last-child td{border-bottom:none;}
 
 <!-- PAGE 2 -->
 <div class="page" id="p1">
+  <div class="fb" style="margin-bottom:16px;">
+    <input class="srch" type="text" id="supSearch" placeholder="🔍 חפש ספק..." oninput="filterSups()" style="width:220px;font-size:13px;padding:7px 14px;">
+    <span style="font-size:12px;color:var(--muted)" id="supCount"></span>
+  </div>
   <div class="asg" id="allSupsGrid"></div>
 </div>
 
@@ -379,7 +391,7 @@ function renderAll(data) {
         <div class="cpi">
           <p class="cptit">פניות פתוחות — ${s.supplier}</p>
           <table class="ct">
-            <thead><tr><th># קריאה</th><th>שם לקוח</th><th>טלפון</th><th>גיל</th><th>נפתחה</th><th>ממתינה ל</th></tr></thead>
+            <thead><tr><th># קריאה</th><th>שם לקוח</th><th class="hide-xs">טלפון</th><th>גיל</th><th class="hide-xs">נפתחה</th><th>ממתינה ל</th></tr></thead>
             <tbody>${cases.map(c=>{
               const a2=c.age>=21?'ar':c.age>=10?'aa':'ag';
               const wp=c.wait==='ספק'?'pill-s':c.wait==='Mami'?'pill-m':'pill-k';
@@ -498,6 +510,20 @@ function showPage(i){
 }
 
 init();
+
+function filterSups() {
+  const q = document.getElementById('supSearch').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('#allSupsGrid .sbc');
+  let visible = 0;
+  cards.forEach(card => {
+    const name = (card.querySelector('.sbname') || card.querySelector('[title]') || {}).title || '';
+    const match = !q || name.toLowerCase().includes(q);
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  const total = cards.length;
+  document.getElementById('supCount').textContent = q ? visible + ' מתוך ' + total + ' ספקים' : total + ' ספקים';
+}
 
 async function fetchLive() {
   const btn = document.getElementById('fetchBtn');
