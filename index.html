@@ -335,13 +335,16 @@ function renderAll(data) {
   document.getElementById('w-mami').textContent   = KPI.for_mami || 0;
   document.getElementById('w-mok').textContent    = KPI.for_mokad|| 0;
 
-  // Alert — ספק
-  const top3 = ALL_SUPS.slice(0,3);
+  // Alert — ספק (רק פניות שה-wait שלהן הוא ספק)
+  const supCases = ALL_CASES.filter(c=>c.wait==='ספק').sort((a,b)=>b.age-a.age);
+  const supByAge = {};
+  supCases.forEach(c=>{ if(c.supplier && (!supByAge[c.supplier] || c.age > supByAge[c.supplier])) supByAge[c.supplier] = c.age; });
+  const top3 = Object.keys(supByAge).sort((a,b)=>supByAge[b]-supByAge[a]).slice(0,3);
   const supAlert = top3.length
-    ? '<strong>⚠️ פניות ישנות ממתינות לספק:</strong>&nbsp;'+top3.map(s=>s.supplier+' ('+s.oldest+' יום)').join(' · ')
+    ? '<strong>⚠️ פניות ישנות ממתינות לספק:</strong>&nbsp;'+top3.map(s=>s+' ('+supByAge[s]+' יום)').join(' · ')
     : '';
 
-  // Alert — Mami (3 הישנות ביותר) — מציג ספק
+  // Alert — Mami (רק פניות שה-wait שלהן הוא Mami)
   const mamiCases = ALL_CASES.filter(c=>c.wait==='Mami').sort((a,b)=>b.age-a.age).slice(0,3);
   const mamiAlert = mamiCases.length
     ? '<strong>🔵 ממתינות ל-Mami:</strong>&nbsp;'+mamiCases.map(c=>(c.supplier||c.name||'—')+' ('+c.age+' יום)').join(' · ')
