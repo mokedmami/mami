@@ -228,7 +228,7 @@ table.mt tr:last-child td{border-bottom:none;}
 
 <div class="page" id="p3">
   <div class="fb">
-    <input class="srch" type="text" placeholder="שם / ספק / מס׳ קריאה..." oninput="renderT()">
+    <input class="srch" id="caseSearch" type="text" placeholder="שם / ספק / מס׳ קריאה..." oninput="renderT()">
     <span class="chip on" onclick="setW(this,'הכל')">הכל</span>
     <span class="chip" onclick="setW(this,'ספק')">ממתין לספק</span>
     <span class="chip" onclick="setW(this,'Mami')">ממתין ל-Mami</span>
@@ -500,7 +500,7 @@ function setW(el,v){fW=v;document.querySelectorAll('.chip').forEach(c=>c.classLi
 function srt(c){if(sC===c)sD*=-1;else{sC=c;sD=-1;}renderT();}
 function renderT(){
   window._tableActive=true;
-  const q=document.querySelector('.srch').value.toLowerCase();
+  const q=(document.getElementById('caseSearch')||document.querySelector('.srch')).value.toLowerCase();
   let rows=(window.ALL_CASES||[]).filter(r=>{
     if(fW==='ספק'&&r.wait!=='ספק') return false;
     if(fW==='Mami'&&r.wait!=='Mami') return false;
