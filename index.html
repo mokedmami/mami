@@ -114,7 +114,7 @@ table.mt td{padding:7px 8px;border-bottom:1px solid #f3f4f6;color:var(--text);wh
 table.mt tr:hover td{background:#f9fafb;}
 table.mt tr:last-child td{border-bottom:none;}
 .bc{display:inline-block;width:30px;height:4px;border-radius:2px;vertical-align:middle;margin-left:4px;}
-@media(max-width:900px){.kpi-grid,.sup10,.asg,.snapshot-grid{grid-template-columns:1fr;}.bot{grid-template-columns:1fr;}}
+@media(max-width:900px){.kpi-grid,.sup10,.asg{grid-template-columns:1fr;}.bot{grid-template-columns:1fr;}.snapshot-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:480px){.hide-xs{display:none!important;}}
 @media(max-width:600px){
   .nav{padding:0 12px;gap:8px;height:52px;}
@@ -515,7 +515,7 @@ function renderSnapshot(snap) {
   }
 
   el.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;" class="snapshot-grid">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" class="snapshot-grid">
       <div class="kc">
         <div class="kl">פניות שנכנסו למוקד</div>
         <div class="kv">${incoming}</div>
